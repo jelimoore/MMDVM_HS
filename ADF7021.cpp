@@ -377,35 +377,6 @@ void CIO::ifConf(MMDVM_STATE modemState, bool reset)
       ADF7021_REG2 |= (uint32_t) 0b111                     << 4;   // modulation (RC 4FSK)
 #endif
       break;
-
-
-    case STATE_M17:
-      // Dev: +1 symb 800 Hz, symb rate = 4800
-
-      ADF7021_REG3 = ADF7021_REG3_M17;
-      ADF7021_REG10 = ADF7021_REG10_M17;
-
-      // K=32
-      ADF7021_REG4  = (uint32_t) 0b0100                    << 0;   // register 4
-      ADF7021_REG4 |= (uint32_t) 0b011                     << 4;   // mode, 4FSK
-      ADF7021_REG4 |= (uint32_t) 0b0                       << 7;
-      ADF7021_REG4 |= (uint32_t) 0b11                      << 8;
-      ADF7021_REG4 |= (uint32_t) ADF7021_DISC_BW_M17       << 10;  // Disc BW
-      ADF7021_REG4 |= (uint32_t) ADF7021_POST_BW_M17       << 20;  // Post dem BW
-      ADF7021_REG4 |= (uint32_t) 0b10                      << 30;  // IF filter (25 kHz)
-
-      ADF7021_REG13 = (uint32_t) 0b1101                    << 0;   // register 13
-      ADF7021_REG13 |= (uint32_t) ADF7021_SLICER_TH_M17    << 4;   // slicer threshold
-
-      ADF7021_REG2 = (uint32_t) 0b10                       << 28;  // invert data (and RC alpha = 0.5)
-      ADF7021_REG2 |= (uint32_t) (m_m17Dev / div2)         << 19;  // deviation
-#if defined(ADF7021_DISABLE_RC_4FSK)
-      ADF7021_REG2 |= (uint32_t) 0b011                     << 4;   // modulation (4FSK)
-#else
-      ADF7021_REG2 |= (uint32_t) 0b111                     << 4;   // modulation (RC 4FSK)
-#endif
-      break;
-
     default:
       break;
   }

@@ -169,9 +169,7 @@ void CSerialPort::getStatus()
   // POCSAG
     reply[12U] = 0U;
 
-  if (m_m17Enable)
-    reply[13U] = m17TX.getSpace();
-  else
+  // M17
     reply[13U] = 0U;
 
   writeInt(1U, reply, 14);
