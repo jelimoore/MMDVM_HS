@@ -45,8 +45,7 @@ public:
   void writeYSFData(const uint8_t* data, uint8_t length);
   void writeYSFLost();
 
-  void writeP25Hdr(const uint8_t* data, uint8_t length);
-  void writeP25Ldu(const uint8_t* data, uint8_t length);
+  void writeP25Data(const uint8_t* data, uint8_t length);
   void writeP25Lost();
 
   void writeNXDNData(const uint8_t* data, uint8_t length);
@@ -83,6 +82,7 @@ private:
   uint8_t setMode(const uint8_t* data, uint8_t length);
   void    setMode(MMDVM_STATE modemState);
   uint8_t setFreq(const uint8_t* data, uint8_t length);
+  uint8_t setSymbolLvlAdj(const uint8_t* data, uint8_t length);
 
   // Hardware versions
   void    beginInt(uint8_t n, int speed);

@@ -25,7 +25,8 @@
 enum P25RX_STATE {
   P25RXS_NONE,
   P25RXS_HDR,
-  P25RXS_LDU
+  P25RXS_LDU,
+  P25RXS_TSDU
 };
 
 class CP25RX {
@@ -35,6 +36,7 @@ public:
   void databit(bool bit);
 
   void reset();
+  void setNAC(uint16_t nac);
 
 private:
   P25RX_STATE m_state;
@@ -45,10 +47,12 @@ private:
   uint16_t    m_endPtr;
   uint16_t    m_lostCount;
   uint8_t     m_duid;
+  uint16_t     m_nac;
 
   void processNone(bool bit);
   void processHdr(bool bit);
   void processLdu(bool bit);
+  void processTsdu(bool bit);
   void writeRSSILdu(uint8_t* data);
   void setEndPtr();
 };

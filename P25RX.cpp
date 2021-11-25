@@ -41,7 +41,8 @@ m_buffer(NULL),
 m_bufferPtr(0U),
 m_endPtr(NOENDPTR),
 m_lostCount(0U),
-m_duid(0U)
+m_duid(0xFFU),
+m_nac(0xF7EU)
 {
   m_buffer = m_outBuffer + 1U;
 }
@@ -121,7 +122,7 @@ void CP25RX::processHdr(bool bit)
   // Search for end of header frame
   if (m_bufferPtr == m_endPtr) {
     m_outBuffer[0U] = 0x01U;
-    serial.writeP25Hdr(m_outBuffer, (m_endPtr / 8U) + 1U);
+    serial.writeP25Data(m_outBuffer, (m_endPtr / 8U) + 1U);
 
     m_lostCount = MAX_SYNC_FRAMES;
     m_bufferPtr = 0U;
@@ -185,6 +186,63 @@ void CP25RX::processLdu(bool bit)
   }
 }
 
+// WIP
+void CP25RX::processTsdu(bool bit)
+{
+  m_bitBuffer <<= 1;
+  if (bit)
+    m_bitBuffer |= 0x01U;
+
+  WRITE_BIT1(m_buffer, m_bufferPtr, bit);
+
+  m_bufferPtr++;
+  if (m_bufferPtr > P25_LDU_FRAME_LENGTH_BITS)
+    reset();
+
+  // Only search for a sync in the right place +-2 bits
+  if (m_bufferPtr >= (P25_SYNC_LENGTH_BITS - 2U) && m_bufferPtr <= (P25_SYNC_LENGTH_BITS + 2U)) {
+    // Fuzzy matching of the data sync bit sequence
+    if (countBits64((m_bitBuffer & P25_SYNC_BITS_MASK) ^ P25_SYNC_BITS) <= SYNC_BIT_RUN_ERRS) {
+      DEBUG1("P25RX: found sync in LDU");
+      m_lostCount = MAX_SYNC_FRAMES;
+      m_bufferPtr = P25_SYNC_LENGTH_BITS;
+    }
+  }
+
+  if (m_bufferPtr == P25_SYNC_LENGTH_BITS + 16U) {
+    // We use DUID here only to detect TDU for EOT
+    // FIXME: we should check and correct for errors in NID first!
+    m_duid = m_buffer[7U] & 0x0F;
+    setEndPtr();
+    DEBUG2("P25RX: DUID", m_duid);
+  }
+
+  // Send a data frame to the host if the required number of bits have been received
+  if (m_bufferPtr == P25_LDU_FRAME_LENGTH_BITS) {
+    m_lostCount--;
+    // We've not seen a data sync for too long, signal RXLOST and change to RX_NONE
+    if (m_lostCount == 0U) {
+      DEBUG1("P25RX: sync timed out, lost lock");
+      io.setDecode(false);
+      serial.writeP25Lost();
+      reset();
+    } else {
+      // Write data to host
+      m_outBuffer[0U] = m_lostCount == (MAX_SYNC_FRAMES - 1U) ? 0x01U : 0x00U;
+      writeRSSILdu(m_outBuffer);
+
+      // Start the next frame
+      ::memset(m_outBuffer, 0x00U, P25_LDU_FRAME_LENGTH_BYTES + 3U);
+      m_bufferPtr = 0U;
+    }
+
+    // Check if we found a TDU to avoid a false "lost lock"
+    if (m_duid == P25_DUID_TDU || m_duid == P25_DUID_TDULC) {
+      reset();
+    }
+  }
+}
+
 void CP25RX::writeRSSILdu(uint8_t* ldu)
 {
 #if defined(SEND_RSSI_DATA)
@@ -193,9 +251,9 @@ void CP25RX::writeRSSILdu(uint8_t* ldu)
   ldu[217U] = (rssi >> 8) & 0xFFU;
   ldu[218U] = (rssi >> 0) & 0xFFU;
 
-  serial.writeP25Ldu(ldu, P25_LDU_FRAME_LENGTH_BYTES + 3U);
+  serial.writeP25Data(ldu, P25_LDU_FRAME_LENGTH_BYTES + 3U);
 #else
-  serial.writeP25Ldu(ldu, P25_LDU_FRAME_LENGTH_BYTES + 1U);
+  serial.writeP25Data(ldu, P25_LDU_FRAME_LENGTH_BYTES + 1U);
 #endif
 }
 
@@ -227,4 +285,10 @@ void CP25RX::setEndPtr()
       m_endPtr = P25_LDU_FRAME_LENGTH_BITS;
       break;
   }
+}
+
+/// Sets the P25 NAC.
+void CP25RX::setNAC(uint16_t nac)
+{
+    m_nac = nac;
 }

@@ -111,7 +111,7 @@ void CIO::process()
   if (m_started) {
     // Two seconds timeout
     if (m_watchdog >= 19200U) {
-      if (m_modemState == STATE_DSTAR || m_modemState == STATE_DMR || m_modemState == STATE_YSF || m_modemState == STATE_P25 || m_modemState == STATE_NXDN) {
+      if ( m_modemState == STATE_DMR || m_modemState == STATE_P25) {
         m_modemState = STATE_IDLE;
         setMode(m_modemState);
       }
@@ -168,15 +168,9 @@ void CIO::process()
     setRX(false);
   }
 
-  if(m_modemState_prev == STATE_DSTAR)
-    scantime = SCAN_TIME;
-  else if(m_modemState_prev == STATE_DMR)
+  if(m_modemState_prev == STATE_DMR)
     scantime = SCAN_TIME * 2U;
-  else if(m_modemState_prev == STATE_YSF)
-    scantime = SCAN_TIME;
   else if(m_modemState_prev == STATE_P25)
-    scantime = SCAN_TIME;
-  else if(m_modemState_prev == STATE_NXDN)
     scantime = SCAN_TIME;
   else
     scantime = SCAN_TIME;
@@ -196,9 +190,6 @@ void CIO::process()
     m_rxBuffer.get(bit, control);
 
     switch (m_modemState_prev) {
-      case STATE_DSTAR:
-        dstarRX.databit(bit);
-        break;
       case STATE_DMR:
 #if defined(DUPLEX)
         if (m_duplex) {
@@ -212,14 +203,8 @@ void CIO::process()
         dmrDMORX.databit(bit);
 #endif
         break;
-      case STATE_YSF:
-        ysfRX.databit(bit);
-        break;
       case STATE_P25:
         p25RX.databit(bit);
-        break;
-      case STATE_NXDN:
-        nxdnRX.databit(bit);
         break;
       default:
         break;
@@ -232,24 +217,12 @@ void CIO::start()
 {
   m_TotalModes = 0U;
 
-  if(m_dstarEnable) {
-    m_Modes[m_TotalModes] = STATE_DSTAR;
-    m_TotalModes++;
-  }
   if(m_dmrEnable) {
     m_Modes[m_TotalModes] = STATE_DMR;
     m_TotalModes++;
   }
-  if(m_ysfEnable) {
-    m_Modes[m_TotalModes] = STATE_YSF;
-    m_TotalModes++;
-  }
   if(m_p25Enable) {
     m_Modes[m_TotalModes] = STATE_P25;
-    m_TotalModes++;
-  }
-  if(m_nxdnEnable) {
-    m_Modes[m_TotalModes] = STATE_NXDN;
     m_TotalModes++;
   }
 
@@ -348,7 +321,7 @@ uint8_t CIO::checkZUMspot(uint32_t frequency_rx, uint32_t frequency_tx) {
 }
 #endif
 
-uint8_t CIO::setFreq(uint32_t frequency_rx, uint32_t frequency_tx, uint8_t rf_power, uint32_t pocsag_freq_tx)
+uint8_t CIO::setFreq(uint32_t frequency_rx, uint32_t frequency_tx, uint8_t rf_power)
 {
   // Configure power level
   setPower(rf_power);
@@ -359,12 +332,6 @@ uint8_t CIO::setFreq(uint32_t frequency_rx, uint32_t frequency_tx, uint8_t rf_po
   ((frequency_rx >= UHF1_MIN)&&(frequency_rx < UHF1_MAX)) || ((frequency_tx >= UHF1_MIN)&&(frequency_tx < UHF1_MAX)) || \
   ((frequency_rx >= VHF2_MIN)&&(frequency_rx < VHF2_MAX)) || ((frequency_tx >= VHF2_MIN)&&(frequency_tx < VHF2_MAX)) || \
   ((frequency_rx >= UHF2_MIN)&&(frequency_rx < UHF2_MAX)) || ((frequency_tx >= UHF2_MIN)&&(frequency_tx < UHF2_MAX)) ) )
-    return 4U;
-
-  if( !( ((pocsag_freq_tx >= VHF1_MIN)&&(pocsag_freq_tx < VHF1_MAX)) || \
-  ((pocsag_freq_tx >= UHF1_MIN)&&(pocsag_freq_tx < UHF1_MAX)) || \
-  ((pocsag_freq_tx >= VHF2_MIN)&&(pocsag_freq_tx < VHF2_MAX)) || \
-  ((pocsag_freq_tx >= UHF2_MIN)&&(pocsag_freq_tx < UHF2_MAX)) ) )
     return 4U;
 #endif
 
@@ -389,43 +356,13 @@ uint8_t CIO::setFreq(uint32_t frequency_rx, uint32_t frequency_tx, uint8_t rf_po
   // Configure frequency
   m_frequency_rx = frequency_rx;
   m_frequency_tx = frequency_tx;
-  m_pocsag_freq_tx = pocsag_freq_tx;
 
   return 0U;
 }
 
 void CIO::setMode(MMDVM_STATE modemState)
 {
-#if defined(USE_ALTERNATE_POCSAG_LEDS)
-  if (modemState != STATE_POCSAG) {
-#endif
-    DSTAR_pin(modemState  == STATE_DSTAR);
-    DMR_pin(modemState    == STATE_DMR);
-#if defined(USE_ALTERNATE_POCSAG_LEDS)
-  }
-#endif
-#if defined(USE_ALTERNATE_NXDN_LEDS)
-  if (modemState != STATE_NXDN) {
-#endif
-    YSF_pin(modemState    == STATE_YSF);
-    P25_pin(modemState    == STATE_P25);
-#if defined(USE_ALTERNATE_NXDN_LEDS)
-  }
-#endif
-#if defined(USE_ALTERNATE_NXDN_LEDS)
-  if (modemState != STATE_YSF && modemState != STATE_P25) {
-#endif
-    NXDN_pin(modemState   == STATE_NXDN);
-#if defined(USE_ALTERNATE_NXDN_LEDS)
-  }
-#endif
-#if defined(USE_ALTERNATE_POCSAG_LEDS)
-  if (modemState != STATE_DSTAR && modemState != STATE_DMR) {
-#endif
-    POCSAG_pin(modemState == STATE_POCSAG);
-#if defined(USE_ALTERNATE_POCSAG_LEDS)
-  }
-#endif
+  //
 }
 
 void CIO::setDecode(bool dcd)
@@ -436,11 +373,6 @@ void CIO::setDecode(bool dcd)
   }
 
   m_dcd = dcd;
-}
-
-void CIO::setLoDevYSF(bool on)
-{
-  m_LoDevYSF = on;
 }
 
 void CIO::resetWatchdog()

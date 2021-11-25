@@ -36,12 +36,8 @@
 
 enum MMDVM_STATE {
   STATE_IDLE      = 0,
-  STATE_DSTAR     = 1,
   STATE_DMR       = 2,
-  STATE_YSF       = 3,
   STATE_P25       = 4,
-  STATE_NXDN      = 5,
-  STATE_POCSAG    = 6,
 
   // Dummy states start at 90
   STATE_DMRDMO1K  = 92,
@@ -71,15 +67,8 @@ const uint8_t  MARK_NONE  = 0x00U;
 #include "DMRTX.h"
 #endif
 
-#include "DStarRX.h"
-#include "DStarTX.h"
-#include "YSFRX.h"
-#include "YSFTX.h"
 #include "P25RX.h"
 #include "P25TX.h"
-#include "NXDNRX.h"
-#include "NXDNTX.h"
-#include "POCSAGTX.h"
 #include "CWIdTX.h"
 #include "CalRSSI.h"
 #include "CalDMR.h"
@@ -98,12 +87,8 @@ extern uint8_t m_cwIdTXLevel;
 
 extern uint32_t m_modeTimerCnt;
 
-extern bool m_dstarEnable;
 extern bool m_dmrEnable;
-extern bool m_ysfEnable;
 extern bool m_p25Enable;
-extern bool m_nxdnEnable;
-extern bool m_pocsagEnable;
 
 extern bool m_duplex;
 
@@ -112,9 +97,6 @@ extern bool m_dcd;
 
 extern CIO io;
 extern CSerialPort serial;
-
-extern CDStarRX dstarRX;
-extern CDStarTX dstarTX;
 
 extern uint8_t m_control;
 
@@ -127,16 +109,8 @@ extern CDMRTX dmrTX;
 extern CDMRDMORX dmrDMORX;
 extern CDMRDMOTX dmrDMOTX;
 
-extern CYSFRX ysfRX;
-extern CYSFTX ysfTX;
-
 extern CP25RX p25RX;
 extern CP25TX p25TX;
-
-extern CNXDNRX nxdnRX;
-extern CNXDNTX nxdnTX;
-
-extern CPOCSAGTX pocsagTX;
 
 extern CCalDMR  calDMR;
 

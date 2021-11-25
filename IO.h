@@ -115,7 +115,7 @@ public:
   void      process(void);
   bool      hasTXOverflow(void);
   bool      hasRXOverflow(void);
-  uint8_t   setFreq(uint32_t frequency_rx, uint32_t frequency_tx, uint8_t rf_power, uint32_t pocsag_freq_tx);
+  uint8_t   setFreq(uint32_t frequency_rx, uint32_t frequency_tx, uint8_t rf_power);
   void      setPower(uint8_t power);
   void      setMode(MMDVM_STATE modemState);
   void      setDecode(bool dcd);
@@ -141,7 +141,7 @@ public:
 #endif
   void      start(void);
   void      startInt(void);
-  void      setDeviations(uint8_t dstarTXLevel, uint8_t dmrTXLevel, uint8_t ysfTXLevel, uint8_t p25TXLevel, uint8_t nxdnTXLevel, uint8_t pocsagTXLevel, bool ysfLoDev);
+  void      setDeviations(uint8_t dmrTXLevel, uint8_t p25TXLevel);
   void      updateCal(void);
 
 #if defined(SEND_RSSI_DATA)
