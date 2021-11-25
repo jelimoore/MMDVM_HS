@@ -36,6 +36,8 @@
 // #define D2RG_MMDVM_HS
 // 8) BridgeCom SkyBridge HotSpot
 // #define SKYBRIDGE_HS
+// 9) LoneStar USB Stick ADF7071
+// #define LONESTAR_USB
 
 // Enable ADF7021 support:
 #define ENABLE_ADF7021
@@ -94,6 +96,9 @@
 
 // Use the YSF and P25 LEDs for NXDN
 // #define USE_ALTERNATE_NXDN_LEDS
+
+// Use the D-Star and P25 LEDs for M17
+// #define USE_ALTERNATE_M17_LEDS
 
 // Use the D-Star and DMR LEDs for POCSAG
 // #define USE_ALTERNATE_POCSAG_LEDS

@@ -1,8 +1,8 @@
 /*
- *   Copyright (C) 2015,2016 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2015,2016,2020 by Jonathan Naylor G4KLX
  *   Copyright (C) 2016,2017,2018,2019,2020 by Andy Uribe CA6JAU
  *   Copyright (C) 2017 by Danilo DB4PLE
-
+ *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -98,6 +98,7 @@ public:
   void      YSF_pin(bool on);
   void      P25_pin(bool on);
   void      NXDN_pin(bool on);
+  void      M17_pin(bool on);
   void      POCSAG_pin(bool on);
   void      COS_pin(bool on);
   void      interrupt(void);
@@ -124,7 +125,7 @@ public:
   uint32_t  getWatchdog(void);
   void      getIntCounter(uint16_t &int1, uint16_t &int2);
   void      selfTest(void);
-#if defined(ZUMSPOT_ADF7021) || defined(SKYBRIDGE_HS)
+#if defined(ZUMSPOT_ADF7021) || defined(LONESTAR_USB) || defined(SKYBRIDGE_HS)
   void      checkBand(uint32_t frequency_rx, uint32_t frequency_tx);
   uint8_t   checkZUMspot(uint32_t frequency_rx, uint32_t frequency_tx);
   void      setBandVHF(bool vhf_on);
@@ -162,6 +163,7 @@ public:
   uint16_t  devYSF(void);
   uint16_t  devP25(void);
   uint16_t  devNXDN(void);
+  uint16_t  devM17(void);
   uint16_t  devPOCSAG(void);
   void      printConf();
 #endif
@@ -181,7 +183,7 @@ private:
   uint32_t           m_scanPauseCnt;
   uint8_t            m_scanPos;
   uint8_t            m_TotalModes;
-  MMDVM_STATE        m_Modes[5];
+  MMDVM_STATE        m_Modes[6];
   bool               m_ledValue;
   volatile uint32_t  m_watchdog;
   volatile uint16_t  m_int1counter;

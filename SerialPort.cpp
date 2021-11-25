@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2013,2015,2016,2018 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2013,2015,2016,2018,2020,2021 by Jonathan Naylor G4KLX
  *   Copyright (C) 2016 by Colin Durbridge G4EML
  *   Copyright (C) 2016,2017,2018,2019 by Andy Uribe CA6JAU
  *   Copyright (C) 2019 by Florian Wolters DF2ET
@@ -115,7 +115,7 @@ void CSerialPort::getStatus()
 
   // Send all sorts of interesting internal values
   reply[0U]  = MMDVM_FRAME_START;
-  reply[1U]  = 13U;
+  reply[1U]  = 14U;
   reply[2U]  = MMDVM_GET_STATUS;
 
   reply[3U]  = 0x00U;
@@ -169,7 +169,12 @@ void CSerialPort::getStatus()
   // POCSAG
     reply[12U] = 0U;
 
-  writeInt(1U, reply, 13);
+  if (m_m17Enable)
+    reply[13U] = m17TX.getSpace();
+  else
+    reply[13U] = 0U;
+
+  writeInt(1U, reply, 14);
 }
 
 void CSerialPort::getVersion()
@@ -265,7 +270,7 @@ uint8_t CSerialPort::setConfig(const uint8_t* data, uint8_t length)
     DEBUG1("Full duplex not supported with this firmware");
     return 6U;
   }
-#elif defined(DUPLEX) && (defined(ZUMSPOT_ADF7021) || defined(SKYBRIDGE_HS))
+#elif defined(DUPLEX) && (defined(ZUMSPOT_ADF7021) || defined(LONESTAR_USB) || defined(SKYBRIDGE_HS))
   if (io.isDualBand() && m_duplex && m_calState == STATE_IDLE && modemState != STATE_DSTARCAL) {
     DEBUG1("Full duplex is not supported on this board");
     return 6U;

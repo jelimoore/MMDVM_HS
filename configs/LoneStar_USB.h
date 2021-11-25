@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2017,2018,2019,2020 by Andy Uribe CA6JAU, Florian Wolters DF2ET
+ *   Copyright (C) 2017,2018,2019,2020 by Andy Uribe CA6JAU
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@
 // 3) MMDVM_HS_Hat revisions 1.1, 1.2 and 1.4 (DB9MAT & DF2ET)
 // #define MMDVM_HS_HAT_REV12
 // 4) MMDVM_HS_Dual_Hat revisions 1.0 (DB9MAT & DF2ET & DO7EN)
-#define MMDVM_HS_DUAL_HAT_REV10
+// #define MMDVM_HS_DUAL_HAT_REV10
 // 5) Nano hotSPOT (BI7JTA)
 // #define NANO_HOTSPOT
 // 6) NanoDV NPi or USB revisions 1.0 (BG4TGO & BG5HHP)
@@ -36,12 +36,14 @@
 // #define D2RG_MMDVM_HS
 // 8) BridgeCom SkyBridge HotSpot
 // #define SKYBRIDGE_HS
+// 9) LoneStar USB Stick ADF7071
+#define LONESTAR_USB
 
 // Enable ADF7021 support:
 #define ENABLE_ADF7021
 
 // Enable full duplex support with dual ADF7021 (valid for homebrew hotspots only):
-#define DUPLEX
+// #define DUPLEX
 
 // TCXO of the ADF7021
 // For 14.7456 MHz:
@@ -60,8 +62,8 @@
 // #define AD7021_GAIN_HIGH
 
 // Host communication selection:
-#define STM32_USART1_HOST
-// #define STM32_USB_HOST
+// #define STM32_USART1_HOST
+#define STM32_USB_HOST
 // #define STM32_I2C_HOST
 
 // I2C host address:
@@ -74,8 +76,7 @@
 #define SEND_RSSI_DATA
 
 // Enable Nextion LCD serial port repeater on USART2 (ZUMspot Libre Kit and ZUMspot RPi):
-#define SERIAL_REPEATER
-#define SERIAL_REPEATER_BAUD 9600
+// #define SERIAL_REPEATER
 
 // Enable Nextion LCD serial port repeater on USART1 (Do not use with STM32_USART1_HOST enabled):
 // #define SERIAL_REPEATER_USART1
@@ -99,13 +100,13 @@
 // #define USE_ALTERNATE_M17_LEDS
 
 // Use the D-Star and DMR LEDs for POCSAG
-#define USE_ALTERNATE_POCSAG_LEDS
+// #define USE_ALTERNATE_POCSAG_LEDS
 
 // Enable for RPi 3B+, USB mode
-// #define LONG_USB_RESET
+#define LONG_USB_RESET
 
 // Enable modem debug messages
-// #define ENABLE_DEBUG
+#define ENABLE_DEBUG
 
 // Disable frequency bands check
 // #define DISABLE_FREQ_CHECK
@@ -114,6 +115,6 @@
 // #define DISABLE_FREQ_BAN
 
 // Enable UDID feature
-#define ENABLE_UDID
+// #define ENABLE_UDID
 
 #endif
