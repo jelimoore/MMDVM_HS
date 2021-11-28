@@ -15,6 +15,10 @@ dtoverlay=pi3-disable-bt
 console=tty1 root=PARTUUID=b0db3d5f-02 rootfstype=ext4 fsck.repair=yes rootwait
 ```
 * Run `sudo apt install build-essential gcc-arm-none-eabi stm32flash` to install the required build tools.
+* Run `git submodule init; git submodule update` to fetch the required modules.
+* Edit the `config.h` file and ensure all options are correct.
+* Run `make` to build the firmware.
+* Run `sudo make zumspot-pi` to flash the firmware to your hat.
 
 # Original Readme
 
