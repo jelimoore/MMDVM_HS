@@ -1,3 +1,23 @@
+# MMDVM_HS_E
+
+Enhanced fork of MMDVM_HS allowing better/deeper support of P25 and DMR. Those are the only two supported modes.
+
+## Installation
+On a stock install of Raspbian, follow these steps:
+* Edit `/boot/config.txt` and add the following section:
+```
+[all]
+enable_uart=1
+dtoverlay=pi3-disable-bt
+```
+* Edit `/boot/cmdline.txt` and remove the `console=ttyAMA0,115200` section. Do not just paste in this cmdline.txt! It will probably not work. It should look something like this:
+```
+console=tty1 root=PARTUUID=b0db3d5f-02 rootfstype=ext4 fsck.repair=yes rootwait
+```
+* Run `sudo apt install build-essential gcc-arm-none-eabi stm32flash` to install the required build tools.
+
+# Original Readme
+
 # Introduction
 
 This is the source code of ZUMspot/MMDVM_HS firmware for personal hotspots (ADF7021 version of the MMDVM firmware), based on Jonathan G4KLX's [MMDVM](https://github.com/g4klx/MMDVM) software. This firmware supports D-Star, DMR, System Fusion, P25 and NXDN digital voice modes and POCSAG 1200 pager protocol.
