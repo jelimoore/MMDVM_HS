@@ -34,19 +34,29 @@
 #include <Arduino.h>
 #endif
 
-enum MMDVM_STATE {
-  STATE_IDLE      = 0,
-  STATE_DMR       = 2,
-  STATE_P25       = 4,
+enum DVM_STATE {
+    STATE_IDLE = 0U,
+    // DMR
+    STATE_DMR = 1U,
+    // Project 25
+    STATE_P25 = 2U,
 
-  // Dummy states start at 90
-  STATE_DMRDMO1K  = 92,
-  STATE_RSSICAL   = 96,
-  STATE_CWID      = 97,
-  STATE_DMRCAL    = 98,
-  STATE_DSTARCAL  = 99,
-  STATE_INTCAL    = 100,
-  STATE_POCSAGCAL = 101
+    // CW
+    STATE_CW = 10U,
+
+    // Calibration States
+    STATE_P25_LF_CAL = 91U,
+    STATE_P25_CAL_1K = 92U,
+
+    STATE_DMR_DMO_CAL_1K = 93U,
+    STATE_DMR_CAL_1K = 94U,
+    STATE_DMR_LF_CAL = 95U,
+
+    STATE_RSSI_CAL = 96U,
+
+    STATE_P25_CAL = 97U,
+    STATE_DMR_CAL = 98U,
+    STATE_INT_CAL = 99U
 };
 
 const uint8_t  MARK_SLOT1 = 0x08U;
@@ -76,12 +86,11 @@ const uint8_t  MARK_NONE  = 0x00U;
 #include "Utils.h"
 #include "I2CHost.h"
 
-extern MMDVM_STATE m_modemState;
-extern MMDVM_STATE m_calState;
-extern MMDVM_STATE m_modemState_prev;
+extern DVM_STATE m_modemState;
+extern DVM_STATE m_calState;
+extern DVM_STATE m_modemState_prev;
 
 extern bool m_cwid_state;
-extern bool m_pocsag_state;
 
 extern uint8_t m_cwIdTXLevel;
 

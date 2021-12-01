@@ -129,7 +129,7 @@ void CDMRDMOTX::setCal(bool start)
 void CDMRDMOTX::createCal()
 {
   // 1.2 kHz sine wave generation
-  if (m_calState == STATE_DMRCAL) {
+  if (m_calState == STATE_DMR_CAL) {
     for (unsigned int i = 0U; i < DMR_FRAME_LENGTH_BYTES; i++) {
       m_poBuffer[i]   = 0x5FU;              // +3, +3, -3, -3 pattern for deviation cal.
     }

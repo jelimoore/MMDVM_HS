@@ -63,7 +63,6 @@
 
 extern uint32_t  m_frequency_rx;
 extern uint32_t  m_frequency_tx;
-extern uint32_t  m_pocsag_freq_tx;
 extern uint8_t   m_power;
 
 class CIO {
@@ -93,13 +92,8 @@ public:
   void      PTT_pin(bool on);
   void      LED_pin(bool on);
   void      DEB_pin(bool on);
-  void      DSTAR_pin(bool on);
   void      DMR_pin(bool on);
-  void      YSF_pin(bool on);
   void      P25_pin(bool on);
-  void      NXDN_pin(bool on);
-  void      M17_pin(bool on);
-  void      POCSAG_pin(bool on);
   void      COS_pin(bool on);
   void      interrupt(void);
 #if defined(DUPLEX)
@@ -118,9 +112,8 @@ public:
   bool      hasRXOverflow(void);
   uint8_t   setFreq(uint32_t frequency_rx, uint32_t frequency_tx, uint8_t rf_power);
   void      setPower(uint8_t power);
-  void      setMode(MMDVM_STATE modemState);
+  void      setMode(DVM_STATE modemState);
   void      setDecode(bool dcd);
-  void      setLoDevYSF(bool ysfLoDev);
   void      resetWatchdog(void);
   uint32_t  getWatchdog(void);
   void      getIntCounter(uint16_t &int1, uint16_t &int2);
@@ -136,9 +129,9 @@ public:
   // RF interface API
   void      setTX(void);
   void      setRX(bool doSle = true);
-  void      ifConf(MMDVM_STATE modemState, bool reset);
+  void      ifConf(DVM_STATE modemState, bool reset);
 #if defined(DUPLEX)
-  void      ifConf2(MMDVM_STATE modemState);
+  void      ifConf2(DVM_STATE modemState);
 #endif
   void      start(void);
   void      startInt(void);
@@ -158,13 +151,8 @@ public:
 #if defined(ENABLE_DEBUG)
   uint32_t  RXfreq(void);
   uint32_t  TXfreq(void);
-  uint16_t  devDSTAR(void);
   uint16_t  devDMR(void);
-  uint16_t  devYSF(void);
   uint16_t  devP25(void);
-  uint16_t  devNXDN(void);
-  uint16_t  devM17(void);
-  uint16_t  devPOCSAG(void);
   void      printConf();
 #endif
 
@@ -183,7 +171,7 @@ private:
   uint32_t           m_scanPauseCnt;
   uint8_t            m_scanPos;
   uint8_t            m_TotalModes;
-  MMDVM_STATE        m_Modes[6];
+  DVM_STATE          m_Modes[6];
   bool               m_ledValue;
   volatile uint32_t  m_watchdog;
   volatile uint16_t  m_int1counter;

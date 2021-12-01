@@ -62,7 +62,7 @@ m_count(0)
 void CCalDMR::process()
 {
   switch (m_calState) {
-    case STATE_DMRCAL:
+    case STATE_DMR_CAL:
       if (m_transmit) {
         dmrDMOTX.setCal(true);
         dmrDMOTX.process();
@@ -70,10 +70,10 @@ void CCalDMR::process()
         dmrDMOTX.setCal(false);
       }
       break;
-    case STATE_DMRDMO1K:
+    case STATE_DMR_DMO_CAL_1K:
       dmrdmo1k();
       break;
-    case STATE_INTCAL:
+    case STATE_INT_CAL:
       // Simple interrupt counter for board diagnostics (TCXO, connections, etc)
       // Not intended for precise interrupt frequency measurements
       m_count++;
@@ -141,7 +141,7 @@ uint8_t CCalDMR::write(const uint8_t* data, uint8_t length)
 
   m_transmit = data[0U] == 1U;
 
-  if (m_transmit && m_state == DMRCAL1K_IDLE && m_calState == STATE_DMRDMO1K)
+  if (m_transmit && m_state == DMRCAL1K_IDLE && m_calState == STATE_DMR_DMO_CAL_1K)
     m_state = DMRCAL1K_VH;
 
   if (m_transmit)
