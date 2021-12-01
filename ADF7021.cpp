@@ -128,7 +128,7 @@ uint16_t CIO::readRSSI()
   SDATA_pin(LOW);
 
 #if defined(DUPLEX)
-  if (m_duplex || m_calState == STATE_RSSICAL)
+  if (m_duplex || m_calState == STATE_RSSI_CAL)
     SLE2_pin(HIGH);
   else
     SLE_pin(HIGH);
@@ -151,7 +151,7 @@ uint16_t CIO::readRSSI()
   }
 
 #if defined(DUPLEX)
-  if (m_duplex || m_calState == STATE_RSSICAL)
+  if (m_duplex || m_calState == STATE_RSSI_CAL)
     SLE2_pin(LOW);
   else
     SLE_pin(LOW);
@@ -189,7 +189,7 @@ uint16_t CIO::readRSSI()
 }
 #endif
 
-void CIO::ifConf(MMDVM_STATE modemState, bool reset)
+void CIO::ifConf(DVM_STATE modemState, bool reset)
 {
   float    divider;
 
@@ -202,7 +202,7 @@ void CIO::ifConf(MMDVM_STATE modemState, bool reset)
 
   uint32_t frequency_tx_tmp, frequency_rx_tmp;
 
-  if (modemState != STATE_CWID)
+  if (modemState != STATE_CW)
     m_modemState_prev = modemState;
 
 
@@ -243,7 +243,7 @@ void CIO::ifConf(MMDVM_STATE modemState, bool reset)
 
   switch (modemState) {
     case STATE_DMR:
-    case STATE_CWID:
+    case STATE_CW:
       AFC_OFFSET = AFC_OFFSET_DMR;
       break;
     case STATE_P25:
@@ -294,11 +294,11 @@ void CIO::ifConf(MMDVM_STATE modemState, bool reset)
   ADF7021_TX_REG0 |= (uint32_t) m_TX_F_divider << 4;    // frequency;
 
 #if defined(TEST_TX)
-  modemState = STATE_DSTAR;
+  modemState = STATE_DMR;
 #endif
 
   switch (modemState) {
-    case STATE_CWID:
+    case STATE_CW:
       // CW ID base configuration: DMR
       // Dev: +1 symb (variable), symb rate = 4800
 
@@ -348,8 +348,6 @@ void CIO::ifConf(MMDVM_STATE modemState, bool reset)
       ADF7021_REG2 |= (uint32_t) 0b111                     << 4;   // modulation (RC 4FSK)
 #endif
       break;
-
-
 
     case STATE_P25:
       // Dev: +1 symb 600 Hz, symb rate = 4800
@@ -463,13 +461,13 @@ void CIO::ifConf(MMDVM_STATE modemState, bool reset)
   Send_AD7021_control();
 
 #if defined(DUPLEX)
-if(m_duplex && (modemState != STATE_CWID))
+if(m_duplex && (modemState != STATE_CW))
   ifConf2(modemState);
 #endif
 }
 
 #if defined(DUPLEX)
-void CIO::ifConf2(MMDVM_STATE modemState)
+void CIO::ifConf2(DVM_STATE modemState)
 {
   uint32_t ADF7021_REG2  = 0U;
   uint32_t ADF7021_REG3  = 0U;
@@ -849,39 +847,14 @@ uint32_t CIO::TXfreq()
   return (uint32_t)((float)(ADF7021_PFD / f_div) * ((float)((32768 * m_TX_N_divider) + m_TX_F_divider) / 32768.0));
 }
 
-uint16_t CIO::devDSTAR()
-{
-  return (uint16_t)((ADF7021_PFD * m_dstarDev) / (f_div * 65536));
-}
-
 uint16_t CIO::devDMR()
 {
   return (uint16_t)((ADF7021_PFD * m_dmrDev) / (f_div * 65536));
 }
 
-uint16_t CIO::devYSF()
-{
-  return (uint16_t)((ADF7021_PFD * m_ysfDev) / (f_div * 65536));
-}
-
 uint16_t CIO::devP25()
 {
   return (uint16_t)((ADF7021_PFD * m_p25Dev) / (f_div * 65536));
-}
-
-uint16_t CIO::devNXDN()
-{
-  return (uint16_t)((ADF7021_PFD * m_nxdnDev) / (f_div * 65536));
-}
-
-uint16_t CIO::devM17()
-{
-  return (uint16_t)((ADF7021_PFD * m_m17Dev) / (f_div * 65536));
-}
-
-uint16_t CIO::devPOCSAG()
-{
-  return (uint16_t)((ADF7021_PFD * m_pocsagDev) / (f_div * 65536));
 }
 
 void CIO::printConf()
@@ -890,13 +863,8 @@ void CIO::printConf()
   DEBUG2I("TX freq (Hz):", TXfreq());
   DEBUG2I("RX freq (Hz):", RXfreq());
   DEBUG2("Power set:", m_power);
-  DEBUG2("D-Star dev (Hz):", devDSTAR());
   DEBUG2("DMR +1 sym dev (Hz):", devDMR());
-  DEBUG2("YSF +1 sym dev (Hz):", devYSF());
   DEBUG2("P25 +1 sym dev (Hz):", devP25());
-  DEBUG2("NXDN +1 sym dev (Hz):", devNXDN());
-  DEBUG2("M17 +1 sym dev (Hz):", devM17());
-  DEBUG2("POCSAG dev (Hz):", devPOCSAG());
 }
 
 #endif

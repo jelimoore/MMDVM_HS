@@ -22,6 +22,69 @@
 
 #include "Globals.h"
 
+enum DVM_COMMANDS {
+    CMD_GET_VERSION = 0x00U,
+    CMD_GET_STATUS = 0x01U,
+    CMD_SET_CONFIG = 0x02U,
+    CMD_SET_MODE = 0x03U,
+
+    CMD_SET_SYMLVLADJ = 0x04U,
+    CMD_SET_RXLEVEL = 0x05U,
+    CMD_SET_RFPARAMS = 0x06U,
+
+    CMD_CAL_DATA = 0x08U,
+    CMD_RSSI_DATA = 0x09U,
+
+    CMD_SEND_CWID = 0x0AU,
+
+    CMD_DMR_DATA1 = 0x18U,
+    CMD_DMR_LOST1 = 0x19U,
+    CMD_DMR_DATA2 = 0x1AU,
+    CMD_DMR_LOST2 = 0x1BU,
+    CMD_DMR_SHORTLC = 0x1CU,
+    CMD_DMR_START = 0x1DU,
+    CMD_DMR_ABORT = 0x1EU,
+
+    CMD_P25_DATA = 0x31U,
+    CMD_P25_LOST = 0x32U,
+    CMD_P25_CLEAR = 0x33U,
+
+    CMD_ACK = 0x70U,
+    CMD_NAK = 0x7FU,
+
+    CMD_DEBUG1 = 0xF1U,
+    CMD_DEBUG2 = 0xF2U,
+    CMD_DEBUG3 = 0xF3U,
+    CMD_DEBUG4 = 0xF4U,
+    CMD_DEBUG5 = 0xF5U,
+    CMD_DEBUG_DUMP = 0xFAU,
+};
+
+enum CMD_REASON_CODE {
+    RSN_OK = 0U, 
+    RSN_NAK = 1U, 
+
+    RSN_ILLEGAL_LENGTH = 2U, 
+    RSN_INVALID_REQUEST = 4U, 
+    RSN_RINGBUFF_FULL = 8U, 
+
+    RSN_INVALID_FDMA_PREAMBLE = 10U,
+    RSN_INVALID_MODE = 11U,
+    
+    RSN_INVALID_DMR_CC = 12U,
+    RSN_INVALID_DMR_SLOT = 13U,
+    RSN_INVALID_DMR_START = 14U,
+    RSN_INVALID_DMR_RX_DELAY = 15U,
+
+    RSN_INVALID_P25_CORR_COUNT = 16U,
+
+    RSN_DMR_DISABLED = 63U,
+    RSN_P25_DISABLED = 64U,
+};
+
+const uint8_t DVM_FRAME_START = 0xFEU;
+
+
 class CSerialPort {
 public:
   CSerialPort();
@@ -34,27 +97,14 @@ public:
   void writeSerialRpt(const uint8_t* data, uint8_t length);
 #endif
 
-  void writeDStarHeader(const uint8_t* header, uint8_t length);
-  void writeDStarData(const uint8_t* data, uint8_t length);
-  void writeDStarLost();
-  void writeDStarEOT();
-
   void writeDMRData(bool slot, const uint8_t* data, uint8_t length);
   void writeDMRLost(bool slot);
-
-  void writeYSFData(const uint8_t* data, uint8_t length);
-  void writeYSFLost();
 
   void writeP25Data(const uint8_t* data, uint8_t length);
   void writeP25Lost();
 
   void writeNXDNData(const uint8_t* data, uint8_t length);
   void writeNXDNLost();
-
-  void writeM17LinkSetup(const uint8_t* data, uint8_t length);
-  void writeM17Stream(const uint8_t* data, uint8_t length);
-  void writeM17EOT();
-  void writeM17Lost();
 
 #if defined(SEND_RSSI_DATA)
   void writeRSSIData(const uint8_t* data, uint8_t length);
@@ -85,7 +135,7 @@ private:
   void    getVersion();
   uint8_t setConfig(const uint8_t* data, uint8_t length);
   uint8_t setMode(const uint8_t* data, uint8_t length);
-  void    setMode(MMDVM_STATE modemState);
+  void    setMode(DVM_STATE modemState);
   uint8_t setFreq(const uint8_t* data, uint8_t length);
   uint8_t setSymbolLvlAdj(const uint8_t* data, uint8_t length);
 

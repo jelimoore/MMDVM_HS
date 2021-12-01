@@ -27,12 +27,11 @@
 #include "Globals.h"
 
 // Global variables
-MMDVM_STATE m_modemState = STATE_IDLE;
-MMDVM_STATE m_calState = STATE_IDLE;
-MMDVM_STATE m_modemState_prev = STATE_IDLE;
+DVM_STATE m_modemState = STATE_IDLE;
+DVM_STATE m_calState = STATE_IDLE;
+DVM_STATE m_modemState_prev = STATE_IDLE;
 
 bool m_cwid_state = false;
-bool m_pocsag_state = false;
 
 uint8_t m_cwIdTXLevel = 30;
 
@@ -101,11 +100,11 @@ void loop()
   if (m_p25Enable && m_modemState == STATE_P25)
     p25TX.process();
 
-  if (m_calState == STATE_DMRCAL || m_calState == STATE_DMRDMO1K || m_calState == STATE_INTCAL)
+  if (m_calState == STATE_DMR_CAL || m_calState == STATE_DMR_DMO_CAL_1K || m_calState == STATE_INT_CAL)
     calDMR.process();
 
 #if defined(SEND_RSSI_DATA)
-  if (m_calState == STATE_RSSICAL)
+  if (m_calState == STATE_RSSI_CAL)
     calRSSI.process();
 #endif
 

@@ -24,7 +24,6 @@
 
 uint32_t    m_frequency_rx;
 uint32_t    m_frequency_tx;
-uint32_t    m_pocsag_freq_tx;
 uint8_t     m_power;
 
 CIO::CIO():
@@ -46,13 +45,8 @@ m_int2counter(0U)
   CE_pin(HIGH);
   LED_pin(HIGH);
   PTT_pin(LOW);
-  DSTAR_pin(LOW);
   DMR_pin(LOW);
-  YSF_pin(LOW);
   P25_pin(LOW);
-  NXDN_pin(LOW);
-  M17_pin(LOW);
-  POCSAG_pin(LOW);
   COS_pin(LOW);
   DEB_pin(LOW);
 
@@ -85,13 +79,8 @@ void CIO::selfTest()
 
       LED_pin(!ledValue);
       PTT_pin(ledValue);
-      DSTAR_pin(ledValue);
       DMR_pin(ledValue);
-      YSF_pin(ledValue);
       P25_pin(ledValue);
-      NXDN_pin(ledValue);
-      M17_pin(ledValue);
-      POCSAG_pin(ledValue);
       COS_pin(ledValue);
 
       blinks++;
@@ -161,12 +150,6 @@ void CIO::process()
       if (m_TotalModes)
         io.ifConf(m_modemState_prev, true);
     }
-    if(m_pocsag_state) { // check for POCSAG end of transmission
-      m_pocsag_state = false;
-      // Restoring previous mode
-      if (m_TotalModes)
-        io.ifConf(m_modemState_prev, true);
-    }
     setRX(false);
   }
 
@@ -179,7 +162,7 @@ void CIO::process()
 
   if(m_modeTimerCnt >= scantime) {
     m_modeTimerCnt = 0U;
-    if( (m_modemState == STATE_IDLE) && (m_scanPauseCnt == 0U) && m_scanEnable && !m_cwid_state && !m_pocsag_state) {
+    if( (m_modemState == STATE_IDLE) && (m_scanPauseCnt == 0U) && m_scanEnable && !m_cwid_state) {
       m_scanPos = (m_scanPos + 1U) % m_TotalModes;
       #if !defined(QUIET_MODE_LEDS)
       setMode(m_Modes[m_scanPos]);
@@ -362,7 +345,7 @@ uint8_t CIO::setFreq(uint32_t frequency_rx, uint32_t frequency_tx, uint8_t rf_po
   return 0U;
 }
 
-void CIO::setMode(MMDVM_STATE modemState)
+void CIO::setMode(DVM_STATE modemState)
 {
     DMR_pin(modemState    == STATE_DMR);
     P25_pin(modemState    == STATE_P25);
